@@ -34,7 +34,7 @@ io.on('connect',(socket)=>{
         const numberCollections=68;
         for(let collection_id=1;collection_id<numberCollections;++collection_id)
         {
-            console.log('checking for id ',collection_id);
+            console.log('checking for id ',collection_id,' User ',socket.id);
             if(collection_id===54)
                 continue;
             if(breaker)
