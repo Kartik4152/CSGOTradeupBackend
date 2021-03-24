@@ -23,8 +23,9 @@ app.use(express.urlencoded({extended:true}));
 // 5) Send Result obj to frontend.
 
 io.on('connect',(socket)=>{
-    console.log('user connected');
+    console.log(`user ${socket.id} connected`);
     socket.on('getTradeups',async (data)=>{
+        let breaker=false;
         console.log('received request',data);
         const numberCollections=68;
         for(let collection_id=1;collection_id<numberCollections;++collection_id)
@@ -32,24 +33,27 @@ io.on('connect',(socket)=>{
             console.log('checking for id ',collection_id);
             if(collection_id===54)
                 continue;
+            if(breaker)
+                break;
             const statTrak=data.statTrak;
             const budget=data.budget;
             const minProfit=data.minProfit;
             let res_obj=await calculateTradeup(collection_id,data.statTrak,data.budget,data.minProfit);
             socket.emit('getCollectionTradeups',res_obj);
             //     const worker = new Worker(`${__dirname}/worker.js`,{workerData:{collection_id,statTrak,budget,minProfit}});
-        // //received output from worker
-        // worker.once('message',(msg)=>{
-        //     if(msg)
-        //     {
-        //         console.log(`Sending ${msg.collection}`)
-        //         socket.emit('getCollectionTradeups',msg);
-        //     }
-        // })
+            // //received output from worker
+            // worker.once('message',(msg)=>{
+            //     if(msg)
+            //     {
+            //         console.log(`Sending ${msg.collection}`)
+            //         socket.emit('getCollectionTradeups',msg);
+            //     }
+            // })
         }
-    })
-    socket.on('disconnect',()=>{
-        console.log('user disconnected');
+        socket.on('disconnect',()=>{
+                breaker=true;
+                console.log(`User ${socket.id} disconnected`);
+            }) 
     })
 })
     
