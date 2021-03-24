@@ -5,8 +5,7 @@ const request=require('request-promise');
 const cheerio=require('cheerio');
 const http=require('http');
 const socketio=require('socket.io');
-const {Worker, isMainThread, parentPort, workerData} = require('worker_threads');
-
+const calculateTradeup=require('./worker');
 
 const app=express();
 const httpServer=http.createServer(app);
@@ -25,7 +24,7 @@ app.use(express.urlencoded({extended:true}));
 
 io.on('connect',(socket)=>{
     console.log('user connected');
-    socket.on('getTradeups',(data)=>{
+    socket.on('getTradeups',async (data)=>{
         console.log('received request',data);
         const numberCollections=68;
         for(let collection_id=1;collection_id<numberCollections;++collection_id)
@@ -36,15 +35,17 @@ io.on('connect',(socket)=>{
             const statTrak=data.statTrak;
             const budget=data.budget;
             const minProfit=data.minProfit;
-            const worker = new Worker(`${__dirname}/worker.js`,{workerData:{collection_id,statTrak,budget,minProfit}});
-        //received output from worker
-        worker.once('message',(msg)=>{
-            if(msg)
-            {
-                console.log(`Sending ${msg.collection}`)
-                socket.emit('getCollectionTradeups',msg);
-            }
-        })
+            let res_obj=await calculateTradeup(collection_id,data.statTrak,data.budget,data.minProfit);
+            socket.emit('getCollectionTradeups',res_obj);
+            //     const worker = new Worker(`${__dirname}/worker.js`,{workerData:{collection_id,statTrak,budget,minProfit}});
+        // //received output from worker
+        // worker.once('message',(msg)=>{
+        //     if(msg)
+        //     {
+        //         console.log(`Sending ${msg.collection}`)
+        //         socket.emit('getCollectionTradeups',msg);
+        //     }
+        // })
         }
     })
     socket.on('disconnect',()=>{

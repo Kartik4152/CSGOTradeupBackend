@@ -1,4 +1,3 @@
-const {Worker, isMainThread, parentPort, workerData} = require('worker_threads');
 const request=require('request-promise');
 const cheerio=require('cheerio');
 const floats={
@@ -40,7 +39,8 @@ const skin={
 }
 
 
-const f=async()=>{
+const f=async(cid,st,bd,mp)=>{
+    let workerData={collection_id:cid,statTrak:st,budget:bd,minProfit:mp};
     let $=cheerio.load(await request(`http://csgo.exchange/collection/view/${workerData.collection_id}`))
     const title=$('h1').text();
     let result_obj={
@@ -48,8 +48,7 @@ const f=async()=>{
         tradeups:[]
     }
    if(workerData.statTrak&&$('label[for="chkCollST"]').length==0){
-    parentPort.postMessage(false);
-    return;
+    return result_obj;
    }
     $=cheerio.load(await request(`http://csgo.exchange/collection/view/${workerData.collection_id}/show/${Number(workerData.statTrak)+1}/0`))
     let re=/background-image:url\((.*)\)/
@@ -263,6 +262,7 @@ const f=async()=>{
             }
         }
     }
-    parentPort.postMessage(result_obj);
+    return result_obj;
 }
-f();
+
+module.exports=f;
