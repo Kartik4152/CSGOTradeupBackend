@@ -51,7 +51,7 @@ const f=async(cid,st,bd,mp)=>{
     return result_obj;
    }
     $=cheerio.load(await request(`http://csgo.exchange/collection/view/${workerData.collection_id}/show/${Number(workerData.statTrak)+1}/0`))
-    let re=/\.com\/(.*)/
+    let re=/\.com\/(.*)\)/
     let skins=[];
     let prices=[];
     if(workerData.statTrak)
