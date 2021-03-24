@@ -27,11 +27,13 @@ io.on('connect',(socket)=>{
     socket.isRunning=false;
     socket.stopLoop=false;
     socket.on('disconnect',()=>{
-                socket.stopLoop=true;
-                console.log(`User ${socket.id} disconnected`);
+            socket.stopLoop=true;
+            console.log(`User ${socket.id} disconnected`);
         })
-    socket.on('getRunningStatus',()=>{
-        socket.emit('isLoopRunning',socket.isRunning);
+    socket.on('getRunningStatus',(callback)=>{
+        callback({
+            isRunning:socket.isRunning,
+        });
     })
     socket.on('stopLoop',()=>{
         socket.stopLoop=true;
@@ -48,6 +50,7 @@ io.on('connect',(socket)=>{
             if(socket.stopLoop)
             {
                 socket.stopLoop=false;
+                socket.isRunning=false;
                 console.log('Loop Stopped');
                 break;
             }
