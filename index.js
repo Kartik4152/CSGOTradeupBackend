@@ -24,35 +24,38 @@ app.use(express.urlencoded({extended:true}));
 
 io.on('connect',(socket)=>{
     console.log(`user ${socket.id} connected`);
-    let breaker=false;
+    socket.isRunning=false;
+    socket.stopLoop=false;
     socket.on('disconnect',()=>{
-                breaker=true;
+                socket.stopLoop=true;
                 console.log(`User ${socket.id} disconnected`);
-        }) 
+        })
+    socket.on('getRunningStatus',()=>{
+        socket.emit('isLoopRunning',socket.isRunning);
+    })
+    socket.on('stopLoop',()=>{
+        socket.stopLoop=true;
+    })
     socket.on('getTradeups',async (data)=>{
         console.log('received request',data);
         const numberCollections=68;
+        socket.isRunning=true;
         for(let collection_id=1;collection_id<numberCollections;++collection_id)
         {
             console.log('checking for id ',collection_id,' User ',socket.id);
             if(collection_id===54)
                 continue;
-            if(breaker)
+            if(socket.stopLoop)
+            {
+                socket.stopLoop=false;
+                console.log('Loop Stopped');
                 break;
+            }
             const statTrak=data.statTrak;
             const budget=data.budget;
             const minProfit=data.minProfit;
             let res_obj=await calculateTradeup(collection_id,data.statTrak,data.budget,data.minProfit);
             socket.emit('getCollectionTradeups',res_obj);
-            //     const worker = new Worker(`${__dirname}/worker.js`,{workerData:{collection_id,statTrak,budget,minProfit}});
-            // //received output from worker
-            // worker.once('message',(msg)=>{
-            //     if(msg)
-            //     {
-            //         console.log(`Sending ${msg.collection}`)
-            //         socket.emit('getCollectionTradeups',msg);
-            //     }
-            // })
         }
     })
 })
