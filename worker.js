@@ -51,7 +51,7 @@ const f=async(cid,st,bd,mp)=>{
     return result_obj;
    }
     $=cheerio.load(await request(`http://csgo.exchange/collection/view/${workerData.collection_id}/show/${Number(workerData.statTrak)+1}/0`))
-    let re=/background-image:url\((.*)\)/
+    let re=/\.com\/(.*)/
     let skins=[];
     let prices=[];
     if(workerData.statTrak)
@@ -65,7 +65,7 @@ const f=async(cid,st,bd,mp)=>{
                prices.push(-1);
            }
            try{
-               skins[skins.length-1].imgUrl=(($(element).find('.imgItem').attr('style')).match(re)[1]);
+               skins[skins.length-1].imgUrl=(`https://steamcommunity-a.akamaihd.net/${($(element).find('.imgItem').attr('style')).match(re)[1]}`);
            }
            catch{
                skins[skins.length-1].imgUrl='default';
@@ -82,7 +82,7 @@ const f=async(cid,st,bd,mp)=>{
                prices.push(-1);
            }
            try{
-               skins[skins.length-1].imgUrl=(($(element).find('.imgItem').attr('style')).match(re)[1]);
+               skins[skins.length-1].imgUrl=(`https://steamcommunity-a.akamaihd.net/${($(element).find('.imgItem').attr('style')).match(re)[1]}`);
            }
            catch{
                skins[skins.length-1].imgUrl='default';
@@ -147,7 +147,7 @@ const f=async(cid,st,bd,mp)=>{
                 prices.push(-1);
             }
             try{
-                imgUrlList.push(($(element).find('.imgItem').attr('style')).match(re)[1]);
+                imgUrlList.push(`https://steamcommunity-a.akamaihd.net/${($(element).find('.imgItem').attr('style')).match(re)[1]}`);
             }
             catch{
                imgUrlList.push('default');
@@ -163,7 +163,7 @@ const f=async(cid,st,bd,mp)=>{
                 prices.push(-1);
             }
             try{
-                imgUrlList.push(($(element).find('.imgItem').attr('style')).match(re)[1]);
+                imgUrlList.push(`https://steamcommunity-a.akamaihd.net/${($(element).find('.imgItem').attr('style')).match(re)[1]}`);
             }
             catch{
                 imgUrlList.push('default');
