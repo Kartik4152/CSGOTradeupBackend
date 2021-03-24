@@ -24,8 +24,12 @@ app.use(express.urlencoded({extended:true}));
 
 io.on('connect',(socket)=>{
     console.log(`user ${socket.id} connected`);
+    let breaker=false;
+    socket.on('disconnect',()=>{
+                breaker=true;
+                console.log(`User ${socket.id} disconnected`);
+        }) 
     socket.on('getTradeups',async (data)=>{
-        let breaker=false;
         console.log('received request',data);
         const numberCollections=68;
         for(let collection_id=1;collection_id<numberCollections;++collection_id)
@@ -50,10 +54,6 @@ io.on('connect',(socket)=>{
             //     }
             // })
         }
-        socket.on('disconnect',()=>{
-                breaker=true;
-                console.log(`User ${socket.id} disconnected`);
-            }) 
     })
 })
     
