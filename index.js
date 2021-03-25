@@ -38,7 +38,7 @@ io.on('connect',(socket)=>{
     socket.on('stopLoop',()=>{
         socket.stopLoop=true;
     })
-    socket.on('getTradeups',(data)=>{
+    socket.on('getTradeups',async (data)=>{
         console.log('received request',data);
         const numberCollections=68;
         socket.isRunning=true;
@@ -51,15 +51,16 @@ io.on('connect',(socket)=>{
             {
                 socket.stopLoop=false;
                 socket.isRunning=false;
-                console.log('Loop Stopped');
+                console.log('Loop Stopped for ',socket.id);
                 break;
             }
             const statTrak=data.statTrak;
             const budget=data.budget;
             const minProfit=data.minProfit;
-            calculateTradeup(collection_id,data.statTrak,data.budget,data.minProfit).then(res=>socket.emit('getCollectionTradeups',res));
+            const res=await calculateTradeup(collection_id,data.statTrak,data.budget,data.minProfit);
+            socket.emit('getCollectionTradeups',res);
         }
-        console.log('completed processiong for ',socket.id);
+        console.log('completed processing for ',socket.id);
     })
 })
     
