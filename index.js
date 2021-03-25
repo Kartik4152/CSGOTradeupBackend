@@ -59,6 +59,7 @@ io.on('connect',(socket)=>{
             const minProfit=data.minProfit;
             calculateTradeup(collection_id,data.statTrak,data.budget,data.minProfit).then(res=>socket.emit('getCollectionTradeups',res));
         }
+        console.log('completed processiong for ',socket.id);
     })
 })
     
