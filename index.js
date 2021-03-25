@@ -9,7 +9,7 @@ const calculateTradeup=require('./worker');
 
 const app=express();
 const httpServer=http.createServer(app);
-const io=socketio(httpServer,{cors:{origin:"*"},transports:['websocket','polling','flashsocket']});
+const io=socketio(httpServer,{cors:{origin:"*",credentials: true},transports:['websocket','polling','flashsocket']});
 
 app.use(cors({origin:'*'}));
 app.use(express.json());
