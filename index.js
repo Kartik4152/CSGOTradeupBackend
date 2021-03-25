@@ -38,7 +38,7 @@ io.on('connect',(socket)=>{
     socket.on('stopLoop',()=>{
         socket.stopLoop=true;
     })
-    socket.on('getTradeups',async (data)=>{
+    socket.on('getTradeups',(data)=>{
         console.log('received request',data);
         const numberCollections=68;
         socket.isRunning=true;
@@ -57,8 +57,7 @@ io.on('connect',(socket)=>{
             const statTrak=data.statTrak;
             const budget=data.budget;
             const minProfit=data.minProfit;
-            let res_obj=await calculateTradeup(collection_id,data.statTrak,data.budget,data.minProfit);
-            socket.emit('getCollectionTradeups',res_obj);
+            calculateTradeup(collection_id,data.statTrak,data.budget,data.minProfit).then(res=>socket.emit('getCollectionTradeups',res));
         }
     })
 })
